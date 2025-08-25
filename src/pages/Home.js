@@ -20,20 +20,19 @@ const Home = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchRecentPosts();
-  }, []);
-
-  const fetchRecentPosts = async () => {
+ useEffect(() => {
+  const fetchPosts = async () => {
     try {
       const response = await axios.get('/api/posts?limit=6');
-      setRecentPosts(response.data.posts);
+      setPosts(response.data.posts || []); // fallback to empty array
     } catch (error) {
-      console.error('Error fetching recent posts:', error);
-    } finally {
-      setLoading(false);
+      console.error("Failed to fetch posts:", error);
+      setPosts([]); // prevent crash
     }
   };
+  fetchPosts();
+}, []);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
