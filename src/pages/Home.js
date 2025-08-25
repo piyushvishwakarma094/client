@@ -20,19 +20,21 @@ const Home = () => {
   });
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-  const fetchPosts = async () => {
-    try {
-      const response = await axios.get('/api/posts?limit=6');
-      setPosts(response.data.posts || []); // fallback to empty array
-    } catch (error) {
-      console.error("Failed to fetch posts:", error);
-      setPosts([]); // prevent crash
-    }
-  };
-  fetchPosts();
-}, []);
-
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        // Replace with your actual backend API or mock JSON if frontend only
+        const response = await axios.get('/api/posts?limit=6');
+        setRecentPosts(response.data.posts || []); 
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+        setRecentPosts([]); 
+      } finally {
+        setLoading(false); // ✅ stop loading after request
+      }
+    };
+    fetchPosts();
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -205,7 +207,7 @@ const Home = () => {
                 </div>
 
                 <div className="flex justify-between items-center text-sm text-gray-500">
-                  <span>By {post.creator.name}</span>
+                  <span>By {post.creator?.name || "Unknown"}</span>
                   <span>{post.currentParticipants}/{post.maxParticipants} joined</span>
                 </div>
               </Link>
