@@ -26,17 +26,21 @@ const PostDetail = () => {
   const [commentLoading, setCommentLoading] = useState(false);
 
   useEffect(() => {
-   const fetchPosts = async () => {
-     try {
-       const response = await axios.get('/api/posts?limit=6');
-       setPosts(response.data.posts || []); // fallback to empty array
-     } catch (error) {
-       console.error("Failed to fetch posts:", error);
-       setPosts([]); // prevent crash
-     }
-   };
-   fetchPosts();
- }, []);
+    fetchPost();
+  }, [id]);
+
+  const fetchPost = async () => {
+    try {
+      const response = await axios.get(`/api/posts/${id}`);
+      setPost(response.data);
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      toast.error('Failed to load trip details');
+      navigate('/posts');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleJoinTrip = async () => {
     if (!user) {
