@@ -171,3 +171,4 @@ Backend (`.env`):
 # minorhost
 # minorhost
 # minorclient
+# minorclient
