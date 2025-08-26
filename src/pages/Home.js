@@ -27,9 +27,10 @@ const Home = () => {
   const fetchRecentPosts = async () => {
     try {
       const response = await axios.get('/api/posts?limit=6');
-      setRecentPosts(response.data.posts);
+      setRecentPosts(response.data.posts || []);
     } catch (error) {
       console.error('Error fetching recent posts:', error);
+      setRecentPosts([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -174,40 +175,42 @@ const Home = () => {
               </div>
             ))}
           </div>
-        ) : recentPosts.length > 0 ? (
+        ) : recentPosts && recentPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recentPosts.map((post) => (
-              <Link key={post._id} to={`/posts/${post._id}`} className="card hover:shadow-lg transition-shadow">
+              <Link key={post?._id || Math.random()} to={`/posts/${post?._id}`} className="card hover:shadow-lg transition-shadow">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">
-                    {post.title}
+                    {post?.title || 'Untitled Trip'}
                   </h3>
                   <span className={`badge ${
-                    post.status === 'active' ? 'badge-green' : 
-                    post.status === 'full' ? 'badge-yellow' : 'badge-red'
+                    post?.status === 'active' ? 'badge-green' : 
+                    post?.status === 'full' ? 'badge-yellow' : 'badge-red'
                   }`}>
-                    {post.status}
+                    {post?.status || 'unknown'}
                   </span>
                 </div>
                 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center text-gray-600">
                     <MapIcon className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{post.fromCity} → {post.toCity}</span>
+                    <span className="text-sm">{post?.fromCity || 'Unknown'} → {post?.toCity || 'Unknown'}</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <CalendarIcon className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{format(new Date(post.travelDate), 'MMM dd, yyyy')}</span>
+                    <span className="text-sm">
+                      {post?.travelDate ? format(new Date(post.travelDate), 'MMM dd, yyyy') : 'Date TBD'}
+                    </span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <ClockIcon className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{post.travelTime}</span>
+                    <span className="text-sm">{post?.travelTime || 'Time TBD'}</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center text-sm text-gray-500">
-                  <span>By {post.creator.name}</span>
-                  <span>{post.currentParticipants}/{post.maxParticipants} joined</span>
+                  <span>By {post?.creator?.name || 'Unknown User'}</span>
+                  <span>{post?.currentParticipants || 0}/{post?.maxParticipants || 0} joined</span>
                 </div>
               </Link>
             ))}
